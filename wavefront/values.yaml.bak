@@ -3,14 +3,14 @@
 ## This is a unique name for the cluster
 ## All metrics will receive a `cluster` tag with this value
 ## Required
-clusterName: st2ha-uem-staging
+clusterName: KUBERNETES_CLUSTER_NAME
 
 
 ## Wavefront URL (cluster) and API Token
 ## Required
 wavefront:
-  url: https://vmwareprod.wavefront.com
-  token: 3b785534-7950-4187-a57e-c059f0f51a89
+  url: https://YOUR_CLUSTER.wavefront.com
+  token: YOUR_API_TOKEN
 
 
 ## Wavefront Collector is responsible to get all Kubernetes metrics from your cluster.
@@ -80,9 +80,6 @@ collector:
     - 'label?controller?revision*'
     - 'label?pod?template*'
     - 'annotation_kubectl_kubernetes_io_last_applied_configuration'
-    - 'label.beta.kubernetes.io/*'
-    - 'label.alpha.eksctl.io/*'
-    - 'label.kubernetes.io/*'
 
   ## Events can also be collected and sent to Wavefront.
   ## Requires Wavefront Proxy 6.0 or greater.
@@ -116,7 +113,7 @@ collector:
     enableRuntimeConfigs: true
 
   ## Can be used to add additional discovery rules
-    config:
+  #   config:
   ## auto-discover a sample prometheus application
   #   - name: prom-example
   #     type: prometheus
@@ -130,70 +127,31 @@ collector:
   #     tags:
   #       alt_name: sample-app
   ## auto-discover mongodb pods (replace USER:PASSWORD)
-    - name: mongodb
-      type: telegraf/mongodb
-      selectors:
-        images:
-        - '*mongo:*'
-      port: 27017
-      conf: |
-        servers = ["mongodb://admin:XeL5Rxwj7F0Wt43tFZVTN7H8Sg5XDHmK@${host}:${port}"]
-        gather_perdb_stats = true
-      filters:
-        metricBlacklist:
-        - 'mongodb.member.status'
-        - 'mongodb.state'
-        - 'mongodb.db.stats.type'
+  #   - name: mongodb
+  #     type: telegraf/mongodb
+  #     selectors:
+  #       images:
+  #       - '*mongo*'
+  #     port: 27017
+  #     conf: |
+  #       servers = ["mongodb://USER:PASSWORD@${host}:${port}"]
+  #       gather_perdb_stats = true
+  #     filters:
+  #       metricBlacklist:
+  #       - 'mongodb.member.status'
+  #       - 'mongodb.state'
+  #       - 'mongodb.db.stats.type'
   ## auto-discover rabbitmq pods (replace USER and PASSWORD)
-    - name: rabbitmq
-      type: telegraf/rabbitmq
-      selectors:
-        images:
-        - '*rabbitmq:*'
-      port: 15672
-      conf: |
-        url = "http://${host}:${port}"
-        username = "admin"
-        password = "9jS+w1u07NbHtZke1m+jW4Cj"
-    - name: stackstorm
-      type: telegraf/statsd
-      selectors:
-        images:
-        - '*st2*' 
-      port: 8125
-      conf: |
-        service_address = "${host}:${port}"
-        protocol = "udp"
-        max_tcp_connections = 250
-        tcp_keep_alive = false
-        service_address = ":8125"
-        delete_gauges = true
-        delete_counters = true
-        delete_sets = true
-        delete_timings = true
-        percentiles = []
-        metric_separator = "_"
-        parse_data_dog_tags = false
-        datadog_extensions = false
-
-        templates = [
-              "st2.action.executions.* measurement.measurement.measurement.type",
-              "st2.action.*.*.executions measurement.measurement.pack.action.field",
-              "st2.amqp.pool_publisher.publish_with_retries.* measurement.measurement.measurement.measurement.field",
-              "st2.amqp.publish.* measurement.measurement.measurement.field",
-              "st2.*.request.method.* measurement.measurement.measurement..method",
-              "st2.*.request.path.* measurement.measurement.measurement..path",
-              "st2.*.response.status.* measurement.measurement.measurement.status",
-              "st2.rule.*.*.* measurement.measurement.pack.rule.field",
-              "st2.rule.* measurement.measurement.field",
-              "st2.trigger.*.*.processed measurement.measurement.pack.name.flag",
-              "st2.trigger.*.*.*.*.processed measurement.measurement.pack.name.name.name.flag",
-              "st2.notifier.* measurement.measurement.notifier",
-              "st2.orquesta.*.*, measurement.measurement.field.measurement"
-        ]
-
-        allowed_pending_messages = 10000
-        percentile_limit = 1000
+  #   - name: rabbitmq
+  #     type: telegraf/rabbitmq
+  #     selectors:
+  #       images:
+  #       - '*rabbitmq:*'
+  #     port: 15672
+  #     conf: |
+  #       url = "http://${host}:${port}"
+  #       username = "USER"
+  #       password = "PASSWORD"
 
   ## Wavefront Collector resource requests and limits
   ## Make sure to keep requests and limits equal to keep the pods in the Guaranteed QoS class
